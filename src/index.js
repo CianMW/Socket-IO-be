@@ -27,12 +27,14 @@ io.on("connection", (socket) => {
     // This doubles as a "login" event since we dont have an auth system
     socket.on("setUsername", ({ username, room }) => {
         onlineUsers.push({ username: username, socketId: socket.id, room: room })
-
+        console.log("This is the Room: " ,room)
+        console.log("This is the socketId: ", socket.id)
+        
         socket.join(room)
         console.log(socket.rooms)
-
         socket.emit("loggedin", { currentUserSocketId: socket.id})
         socket.to(room).emit("newConnection")
+
     })
 
     // When we get a message from the frontend we broadcast it to all users in the room
@@ -44,10 +46,14 @@ io.on("connection", (socket) => {
 
     socket.on("roomChange", ({socketId, room}) => {
         const index = onlineUsers.findIndex(user => user.socketId === socketId)
-        console.log("INDEX IS:", index)
+        const indexBackupCheck = onlineUsers.length
+        console.log("INDEX IS:", index, indexBackupCheck)
+        console.log("This is the Room: " ,room)
         socket.join(room)
 
         onlineUsers[index] = {...onlineUsers[index], room: room}
+        socket.to(room).emit("updateUserList", {})
+        console.log("666")
     })
 
     // When we disconnect we remove the user from the online users list

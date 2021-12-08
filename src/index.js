@@ -38,12 +38,15 @@ io.on("connection", (socket) => {
     // When we get a message from the frontend we broadcast it to all users in the room
     socket.on("sendmessage", ({ message, room }) => {
         //socket.broadcast.emit("message", message) // this is sending to all users except the sender
+        console.log("THE ROOM:",room)
         socket.to(room).emit("message", message) // this is sending to all users in the room except the sender
     })
 
     socket.on("roomChange", ({socketId, room}) => {
         const index = onlineUsers.findIndex(user => user.socketId === socketId)
         console.log("INDEX IS:", index)
+        socket.join(room)
+
         onlineUsers[index] = {...onlineUsers[index], room: room}
     })
 

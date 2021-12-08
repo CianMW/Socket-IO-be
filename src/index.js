@@ -31,7 +31,7 @@ io.on("connection", (socket) => {
         socket.join(room)
         console.log(socket.rooms)
 
-        socket.emit("loggedin")
+        socket.emit("loggedin", { currentUserSocketId: socket.id})
         socket.to(room).emit("newConnection")
     })
 
@@ -39,6 +39,12 @@ io.on("connection", (socket) => {
     socket.on("sendmessage", ({ message, room }) => {
         //socket.broadcast.emit("message", message) // this is sending to all users except the sender
         socket.to(room).emit("message", message) // this is sending to all users in the room except the sender
+    })
+
+    socket.on("roomChange", ({socketId, room}) => {
+        const index = onlineUsers.findIndex(user => user.socketId === socketId)
+        console.log("INDEX IS:", index)
+        onlineUsers[index] = {...onlineUsers[index], room: room}
     })
 
     // When we disconnect we remove the user from the online users list
@@ -51,6 +57,6 @@ io.on("connection", (socket) => {
 // We are starting our HTTP server and NOT our Express app
 // Starting app.listen here would initialize and start another instance of a HTTP Server,
 // which would be not including our io configuration
-httpServer.listen(3000, () => {
-    console.log("Listening on port 3000");
+httpServer.listen(3030, () => {
+    console.log("Listening on port 3030");
 });

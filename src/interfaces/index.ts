@@ -1,6 +1,7 @@
 export interface IOnlineUser {
-    name: string
+    username: string
     room: IRoom
+    socketId: string
 }
 export interface IRoom {
     room: string

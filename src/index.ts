@@ -2,11 +2,15 @@ import express from "express";
 import cors from "cors"
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { IOnlineUser, IOnlineUsers } from "./interfaces";
 
+
+process.env.TS_NODE_DEV && require("dotenv").config()  
 // We are configuring our Express application 
-const app = express();
+console.log(process.env.MONGO_DB_URL)
 
-let onlineUsers = []
+const app = express();
+let onlineUsers: IOnlineUser[] = []
 
 app.use(cors())
 app.get("/online-users", (req, res) => {
@@ -26,7 +30,8 @@ io.on("connection", (socket) => {
     // We are setting the username for the user
     // This doubles as a "login" event since we dont have an auth system
     socket.on("setUsername", ({ username, room }) => {
-        onlineUsers.push({ username: username, socketId: socket.id, room: room })
+        let singleUser : IOnlineUser = { username: username, socketId: socket.id, room: room }
+        onlineUsers.push(singleUser)
         console.log("This is the Room: " ,room)
         console.log("This is the socketId: ", socket.id)
         
